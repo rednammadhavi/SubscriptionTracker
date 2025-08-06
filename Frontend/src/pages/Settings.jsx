@@ -11,7 +11,7 @@ const Settings = () => {
     const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
     const handleSave = async () => {
-        await API.put('/user/settings', form);
+        await API.put('/auth/settings', form);
         alert('Updated!');
     };
 
