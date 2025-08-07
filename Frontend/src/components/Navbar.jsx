@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Menu, X } from "lucide-react";
-import { getCurrentUser } from "../services/authService";
+import { getCurrentUser } from "../Api/auth";
 import { setUser } from "../redux/usersSlice";
 import { setLoading } from "../redux/loadersSlice";
 
@@ -14,12 +14,6 @@ const Navbar = () => {
     const location = useLocation();
 
     const toggleMenu = () => setMenuOpen((prev) => !prev);
-
-    const logout = () => {
-        localStorage.removeItem("token");
-        dispatch(setUser(null));
-        navigate("/login");
-    };
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -59,13 +53,12 @@ const Navbar = () => {
                         <>
                             <Link to="/" className="text-gray-800 hover:text-indigo-600 transition">Dashboard</Link>
                             <Link to="/analytics" className="text-gray-800 hover:text-indigo-600 transition">Analytics</Link>
-                            <button onClick={logout} className="text-red-500 hover:underline transition">Logout</button>
-                            <Link to="/settings" className="text-gray-800 hover:text-indigo-600 transition">
-                                <div className="flex items-center gap-2 bg-indigo-500 text-white px-3 py-1 rounded-full">
+                            <Link to="/trash" className="text-gray-800 hover:text-indigo-600 transition">Trash</Link>
+                            <Link to="/profile" className="text-gray-800 hover:text-indigo-600 transition">
+                                <div className="flex items-center gap-2 bg-indigo-500 text-white p-2 rounded-full">
                                     <div className="bg-white text-indigo-600 h-8 w-8 flex items-center justify-center rounded-full font-bold">
                                         {user?.name?.[0]?.toUpperCase() || "U"}
                                     </div>
-                                    <span className="capitalize">{user?.name || "User"}</span>
                                 </div>
                             </Link>
                         </>
@@ -90,7 +83,8 @@ const Navbar = () => {
                 {/* Mobile Menu Toggle */}
                 <button
                     onClick={toggleMenu}
-                    className="md:hidden text-gray-800 focus:outline-none"
+                    aria-label="Toggle Menu"
+                    className="md:hidden text-gray-800"
                 >
                     {menuOpen ? <X size={28} /> : <Menu size={28} />}
                 </button>
@@ -104,15 +98,16 @@ const Navbar = () => {
                             <>
                                 <Link to="/" className="text-lg" onClick={toggleMenu}>Dashboard</Link>
                                 <Link to="/analytics" className="text-lg" onClick={toggleMenu}>Analytics</Link>
-                                <button onClick={logout} className="text-red-500 text-lg">Logout</button>
-                                <Link to="/settings" className="text-lg" onClick={toggleMenu}>
-                                    <div className="flex items-center gap-2 mt-2 text-sm">
+                                <Link to="/trash" className="text-lg" onClick={toggleMenu}>Trash</Link>
+                                <Link to="/profile" className="text-lg" onClick={toggleMenu}>
+                                    <div className="flex items-center gap-2 text-sm mt-2">
                                         <div className="bg-indigo-600 text-white w-8 h-8 flex items-center justify-center rounded-full font-bold">
                                             {user?.name?.[0]?.toUpperCase() || "U"}
                                         </div>
-                                        <span className="text-indigo-600 font-medium">{user?.name || "User"}</span>
+                                        <span className="text-indigo-600 text-xl mb-1">{user?.name || "User"}</span>
                                     </div>
                                 </Link>
+
                             </>
                         ) : (
                             <>

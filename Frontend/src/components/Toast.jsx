@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import ToastService from "../utils/toastService";
+import ToastService from "../utils/toast";
 
 export default function Toast() {
     const [toast, setToast] = useState(null);

@@ -4,20 +4,24 @@ const subscriptionSchema = new mongoose.Schema(
     {
         userId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
+            ref: "User"
         },
         name: String,
         cost: Number,
         cycle: {
             type: String,
-            enum: ['monthly', 'yearly']
+            enum: ["monthly", "yearly"]
         },
         category: String,
         startDate: Date,
         reminderMode: {
             type: String,
-            enum: ['email', 'sms'],
-            default: 'email'
+            enum: ["email", "sms"],
+            default: "email"
+        },
+        isDeleted: {
+            type: Boolean,
+            default: false
         }
     },
     { timestamps: true }

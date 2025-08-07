@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getSubscriptions, deleteSubscription } from "../services/subscriptionService";
+import { getSubscriptions, deleteSubscription } from "../Api/subscription";
 import Modal from "../components/Modal";
 import Button from "../components/Button";
-import ToastService from "../utils/toastService";
+import ToastService from "../utils/toast";
 
 const Dashboard = () => {
     const navigate = useNavigate();

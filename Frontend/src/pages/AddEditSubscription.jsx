@@ -4,9 +4,9 @@ import {
     createSubscription,
     updateSubscription,
     getSubscriptionById,
-} from "../services/subscriptionService";
+} from "../Api/subscription";
 import Button from "../components/Button";
-import ToastService from "../utils/toastService";
+import ToastService from "../utils/toast";
 
 const AddEditSubscription = ({ isEdit = false }) => {
     const [form, setForm] = useState({
@@ -15,14 +15,38 @@ const AddEditSubscription = ({ isEdit = false }) => {
         cycle: "monthly",
         startDate: "",
         reminderMode: "email",
+        category: "Other",
     });
+
+    const [loading, setLoading] = useState(isEdit); // show loader only on edit mode
     const { id } = useParams();
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (isEdit && id) {
-            getSubscriptionById(id).then((res) => setForm(res.data));
-        }
+        const fetchSubscription = async () => {
+            if (isEdit && id) {
+                try {
+                    const res = await getSubscriptionById(id);
+                    const data = res.data;
+
+                    // Safely populate fields, format date properly
+                    setForm({
+                        name: data.name || "",
+                        cost: data.cost || "",
+                        cycle: data.cycle || "monthly",
+                        startDate: data.startDate?.slice(0, 10) || "",
+                        reminderMode: data.reminderMode || "email",
+                        category: data.category || "Other",
+                    });
+                } catch (err) {
+                    ToastService.error("Failed to load subscription.");
+                } finally {
+                    setLoading(false);
+                }
+            }
+        };
+
+        fetchSubscription();
     }, [id, isEdit]);
 
     const handleChange = (e) =>
@@ -31,33 +55,66 @@ const AddEditSubscription = ({ isEdit = false }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            isEdit
-                ? await updateSubscription(id, form)
-                : await createSubscription(form);
-            ToastService.success(`Subscription ${isEdit ? "updated" : "added"}`);
+            if (isEdit) {
+                await updateSubscription(id, form);
+                ToastService.success("Subscription updated successfully!");
+            } else {
+                await createSubscription(form);
+                ToastService.success("Subscription added successfully!");
+            }
             navigate("/");
         } catch {
             ToastService.error("Something went wrong.");
         }
     };
 
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-[60vh] text-gray-500">
+                Loading subscription details...
+            </div>
+        );
+    }
+
     return (
-        <div className="max-w-md mx-auto">
-            <h2 className="text-xl font-bold mb-4">
+        <div className="max-w-md mx-auto p-4">
+            <h2 className="text-2xl font-bold mb-4 text-center">
                 {isEdit ? "Edit Subscription" : "Add Subscription"}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
-                {["name", "cost", "startDate"].map((field) => (
-                    <input
-                        key={field}
-                        type={field === "cost" ? "number" : field === "startDate" ? "date" : "text"}
-                        name={field}
-                        placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-                        value={form[field]}
-                        onChange={handleChange}
-                        className="w-full p-2 border rounded"
-                    />
-                ))}
+                {/* Name */}
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Subscription Name"
+                    value={form.name}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded"
+                    required
+                />
+
+                {/* Cost */}
+                <input
+                    type="number"
+                    name="cost"
+                    placeholder="Cost (₹)"
+                    value={form.cost}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded"
+                    required
+                />
+
+                {/* Start Date */}
+                <input
+                    type="date"
+                    name="startDate"
+                    value={form.startDate}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded"
+                    required
+                />
+
+                {/* Cycle */}
                 <select
                     name="cycle"
                     value={form.cycle}
@@ -67,6 +124,8 @@ const AddEditSubscription = ({ isEdit = false }) => {
                     <option value="monthly">Monthly</option>
                     <option value="yearly">Yearly</option>
                 </select>
+
+                {/* Reminder Mode */}
                 <select
                     name="reminderMode"
                     value={form.reminderMode}
@@ -76,7 +135,28 @@ const AddEditSubscription = ({ isEdit = false }) => {
                     <option value="email">Email</option>
                     <option value="sms">SMS</option>
                 </select>
-                <Button type="submit" text={isEdit ? "Update" : "Add"} className="w-full" />
+
+                {/* Category */}
+                <select
+                    name="category"
+                    value={form.category}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded"
+                >
+                    <option value="Entertainment">Entertainment</option>
+                    <option value="Productivity">Productivity</option>
+                    <option value="Streaming">Streaming</option>
+                    <option value="Utilities">Utilities</option>
+                    <option value="News">News</option>
+                    <option value="Other">Other</option>
+                </select>
+
+                {/* Submit */}
+                <Button
+                    type="submit"
+                    text={isEdit ? "Update Subscription" : "Add Subscription"}
+                    className="w-full"
+                />
             </form>
         </div>
     );

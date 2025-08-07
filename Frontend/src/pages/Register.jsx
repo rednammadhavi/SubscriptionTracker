@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { register } from '../services/authService';
+import { register } from '../Api/auth';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import Alert from '../components/Alert';
