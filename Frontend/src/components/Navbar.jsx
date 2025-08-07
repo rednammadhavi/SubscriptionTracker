@@ -34,6 +34,7 @@ const Navbar = () => {
         }
     }, [dispatch, user]);
 
+    // Close mobile menu on route change
     useEffect(() => {
         setMenuOpen(false);
     }, [location.pathname]);
@@ -42,20 +43,20 @@ const Navbar = () => {
         <header className="bg-white border-b shadow-sm sticky top-0 z-50 w-full">
             <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
                 {/* Logo */}
-                <Link to="/" className="flex items-center text-2xl font-bold text-indigo-600">
-                    S<span className="text-sm mt-2 font-normal">UBSCRIPTION</span>
-                    T<span className="text-sm mt-2 font-normal">RACKER</span>
+                <Link to="/" className="text-2xl font-bold text-indigo-600 tracking-tight flex items-end gap-0.5">
+                    S<span className="text-sm font-normal">UBSCRIPTION</span>
+                    T<span className="text-sm font-normal">RACKER</span>
                 </Link>
 
                 {/* Desktop Menu */}
                 <nav className="hidden md:flex items-center gap-6">
                     {user ? (
                         <>
-                            <Link to="/" className="text-gray-800 hover:text-indigo-600 transition">Dashboard</Link>
+                            <Link to="/dashboard" className="text-gray-800 hover:text-indigo-600 transition">Dashboard</Link>
                             <Link to="/analytics" className="text-gray-800 hover:text-indigo-600 transition">Analytics</Link>
                             <Link to="/trash" className="text-gray-800 hover:text-indigo-600 transition">Trash</Link>
-                            <Link to="/profile" className="text-gray-800 hover:text-indigo-600 transition">
-                                <div className="flex items-center gap-2 bg-indigo-500 text-white p-2 rounded-full">
+                            <Link to="/profile">
+                                <div className="flex items-center gap-2 bg-indigo-600 text-white p-1 rounded-full hover:bg-indigo-700 transition">
                                     <div className="bg-white text-indigo-600 h-8 w-8 flex items-center justify-center rounded-full font-bold">
                                         {user?.name?.[0]?.toUpperCase() || "U"}
                                     </div>
@@ -68,7 +69,7 @@ const Navbar = () => {
                                 to="/login"
                                 className="px-4 py-1.5 border-2 border-indigo-600 text-indigo-600 rounded-full hover:bg-indigo-600 hover:text-white transition"
                             >
-                                Login
+                                LogIn
                             </Link>
                             <Link
                                 to="/register"
@@ -83,7 +84,7 @@ const Navbar = () => {
                 {/* Mobile Menu Toggle */}
                 <button
                     onClick={toggleMenu}
-                    aria-label="Toggle Menu"
+                    aria-label={menuOpen ? "Close menu" : "Open menu"}
                     className="md:hidden text-gray-800"
                 >
                     {menuOpen ? <X size={28} /> : <Menu size={28} />}
@@ -91,33 +92,37 @@ const Navbar = () => {
             </div>
 
             {/* Mobile Menu */}
-            {menuOpen && (
-                <div className="md:hidden bg-gray-50 border-t">
-                    <nav className="flex flex-col gap-4 px-4 py-4">
-                        {user ? (
-                            <>
-                                <Link to="/" className="text-lg" onClick={toggleMenu}>Dashboard</Link>
-                                <Link to="/analytics" className="text-lg" onClick={toggleMenu}>Analytics</Link>
-                                <Link to="/trash" className="text-lg" onClick={toggleMenu}>Trash</Link>
-                                <Link to="/profile" className="text-lg" onClick={toggleMenu}>
-                                    <div className="flex items-center gap-2 text-sm mt-2">
-                                        <div className="bg-indigo-600 text-white w-8 h-8 flex items-center justify-center rounded-full font-bold">
-                                            {user?.name?.[0]?.toUpperCase() || "U"}
-                                        </div>
-                                        <span className="text-indigo-600 text-xl mb-1">{user?.name || "User"}</span>
+            <div
+                className={`md:hidden transition-all duration-300 overflow-hidden ${menuOpen ? "max-h-96" : "max-h-0"
+                    }`}
+            >
+                <nav className="flex flex-col gap-4 px-4 py-4 bg-gray-50 border-t">
+                    {user ? (
+                        <>
+                            <Link to="/" className="text-lg" onClick={toggleMenu}>Dashboard</Link>
+                            <Link to="/analytics" className="text-lg" onClick={toggleMenu}>Analytics</Link>
+                            <Link to="/trash" className="text-lg" onClick={toggleMenu}>Trash</Link>
+                            <Link to="/profile" className="text-lg" onClick={toggleMenu}>
+                                <div className="flex items-center gap-3 mt-2">
+                                    <div className="bg-indigo-600 text-white w-8 h-8 flex items-center justify-center rounded-full font-bold">
+                                        {user?.name?.[0]?.toUpperCase() || "U"}
                                     </div>
-                                </Link>
-
-                            </>
-                        ) : (
-                            <>
-                                <Link to="/login" className="text-lg w-full text-center py-1.5 border border-indigo-600 rounded">Login</Link>
-                                <Link to="/register" className="text-lg w-full text-center py-1.5 bg-indigo-600 text-white rounded">Register</Link>
-                            </>
-                        )}
-                    </nav>
-                </div>
-            )}
+                                    <span className="text-indigo-700 font-medium">{user?.name || "User"}</span>
+                                </div>
+                            </Link>
+                        </>
+                    ) : (
+                        <>
+                            <Link to="/login" className="text-lg w-full text-center py-1.5 border border-indigo-600 rounded" onClick={toggleMenu}>
+                                LogIn
+                            </Link>
+                            <Link to="/register" className="text-lg w-full text-center py-1.5 bg-indigo-600 text-white rounded" onClick={toggleMenu}>
+                                Register
+                            </Link>
+                        </>
+                    )}
+                </nav>
+            </div>
         </header>
     );
 };

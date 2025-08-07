@@ -15,34 +15,33 @@ const Home = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white">
+        <div className="min-h-screen flex flex-col bg-gradient-to-br from-indigo-50 to-white">
             {/* Hero Section */}
-            <section className="max-w-7xl mx-auto px-4 py-20 text-center">
-                <h1 className="text-4xl sm:text-5xl font-extrabold text-indigo-700 mb-4">
-                    Subscription Tracker
+            <section className="flex-1 max-w-7xl mx-auto px-4 py-24 text-center">
+                <h1 className="text-4xl sm:text-5xl font-extrabold text-indigo-700 mb-6 leading-tight">
+                    Manage Your Subscriptions Smarter
                 </h1>
-                <p className="text-gray-600 text-lg sm:text-xl max-w-2xl mx-auto mb-6">
-                    Manage and track all your subscriptions effortlessly. Get alerts,
-                    view analytics, and stay in control of your recurring expenses.
+                <p className="text-gray-600 text-lg sm:text-xl max-w-2xl mx-auto mb-8">
+                    Effortlessly track, analyze, and control your recurring expenses.
                 </p>
                 {user ? (
                     <Link
                         to="/dashboard"
-                        className="inline-block bg-indigo-600 text-white px-6 py-3 rounded-full text-lg font-medium hover:bg-indigo-700 transition"
+                        className="inline-block bg-indigo-600 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-indigo-700 transition-colors"
                     >
                         Go to Dashboard
                     </Link>
                 ) : (
-                    <div className="flex justify-center gap-4 flex-wrap">
+                    <div className="flex flex-wrap justify-center gap-4">
                         <Link
                             to="/register"
-                            className="bg-indigo-600 text-white px-6 py-3 rounded-full text-lg font-medium hover:bg-indigo-700 transition"
+                            className="bg-indigo-600 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-indigo-700 transition-colors"
                         >
                             Get Started
                         </Link>
                         <Link
                             to="/login"
-                            className="border border-indigo-600 text-indigo-600 px-6 py-3 rounded-full text-lg font-medium hover:bg-indigo-600 hover:text-white transition"
+                            className="border border-indigo-600 text-indigo-600 px-8 py-3 rounded-full text-lg font-semibold hover:bg-indigo-600 hover:text-white transition-colors"
                         >
                             Login
                         </Link>
@@ -52,17 +51,17 @@ const Home = () => {
 
             {/* Features Section */}
             <section className="bg-white border-t py-16">
-                <div className="max-w-5xl mx-auto px-4">
-                    <h2 className="text-3xl font-bold text-center text-gray-800 mb-10">
-                        Why use Subscription Tracker?
+                <div className="max-w-6xl mx-auto px-4">
+                    <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">
+                        Why Choose Subscription Tracker?
                     </h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                         {features.map((feature, idx) => (
                             <div
                                 key={idx}
-                                className="flex items-start gap-4 bg-gray-50 p-5 rounded-lg border"
+                                className="flex items-start gap-4 bg-gray-50 p-5 rounded-lg border border-gray-200 hover:shadow transition-shadow"
                             >
-                                <CheckCircle className="text-indigo-600 mt-1" />
+                                <CheckCircle className="text-indigo-600 mt-1 shrink-0" />
                                 <p className="text-gray-700">{feature}</p>
                             </div>
                         ))}
@@ -71,8 +70,8 @@ const Home = () => {
             </section>
 
             {/* Footer */}
-            <footer className="text-center py-6 text-sm text-gray-500 border-t">
-                © {new Date().getFullYear()} SubsTracker. Built with ❤️ by Rednam Madhavi.
+            <footer className="text-center py-6 text-sm text-gray-500 border-t mt-auto">
+                © {new Date().getFullYear()} SubscriptionTracker. Built with ❤️ by Rednam Madhavi.
             </footer>
         </div>
     );

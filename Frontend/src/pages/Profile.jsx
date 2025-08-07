@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/outline";
 import API from "../Api/api";
 import Button from "../components/Button";
 import ToastService from "../utils/toast";
@@ -48,96 +49,98 @@ const Profile = () => {
 
     if (!user) {
         return (
-            <div className="flex items-center justify-center h-[60vh]">
+            <div className="flex items-center justify-center h-screen bg-gradient-to-br from-indigo-200 to-blue-100">
                 <div className="text-gray-600 text-lg">Loading profile...</div>
             </div>
         );
     }
 
     return (
-        <div className="flex items-center justify-center min-h-[70vh] px-4">
-            <div className="w-full max-w-lg bg-white shadow-lg rounded-lg p-6">
-                {/* Avatar & Name */}
-                <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-4">
-                        <div className="h-14 w-14 rounded-full bg-indigo-600 text-white flex items-center justify-center text-2xl font-bold">
-                            {user.name?.[0]?.toUpperCase() || "U"}
-                        </div>
-                        <div>
-                            <h2 className="text-2xl font-semibold text-gray-800">{user.name}</h2>
-                            <p className="text-sm text-gray-500">Account Information</p>
-                        </div>
+        <div className="min-h-[80vh] bg-gradient-to-br from-indigo-100 to-blue-50 flex items-center justify-center p-4">
+            <div className="w-full max-w-xl bg-white shadow-xl rounded-2xl p-6 flex flex-col h-full">
+                {/* Avatar */}
+                <div className="flex flex-col items-center mb-6">
+                    <div className="h-20 w-20 rounded-full bg-indigo-600 text-white flex items-center justify-center text-3xl font-bold shadow-md">
+                        {user.name?.[0]?.toUpperCase() || "U"}
                     </div>
-                    <button
-                        onClick={handleLogout}
-                        className="text-sm text-red-600 hover:underline font-medium"
-                    >
-                        Logout
-                    </button>
+                    <h2 className="mt-3 text-2xl font-semibold text-gray-800">{user.name}</h2>
+                    <p className="text-sm text-gray-500">Your profile details</p>
                 </div>
 
-                {/* Profile View/Edit */}
-                {!editMode ? (
-                    <div className="space-y-4">
-                        <div>
-                            <label className="text-sm text-gray-500">Email</label>
-                            <div className="w-full border rounded px-3 py-2 bg-gray-50 text-gray-800">
-                                {user.email}
+                {/* Profile Content */}
+                <div className="flex-1 overflow-auto">
+                    {!editMode ? (
+                        <div className="space-y-4">
+                            <div>
+                                <label className="text-sm text-gray-500">Email</label>
+                                <div className="w-full border rounded px-3 py-2 bg-gray-100 text-gray-800">
+                                    {user.email}
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="text-sm text-gray-500">Alert Mode</label>
+                                <div className="w-full border rounded px-3 py-2 bg-gray-100 text-gray-800 capitalize">
+                                    {user.alertMode || "email"}
+                                </div>
+                            </div>
+
+                            <div className="mt-6 flex justify-end">
+                                <Button text="Edit Profile" onClick={() => setEditMode(true)} />
                             </div>
                         </div>
+                    ) : (
+                        <div className="space-y-4">
+                            <div>
+                                <label className="text-sm text-gray-500">Name</label>
+                                <input
+                                    name="name"
+                                    value={form.name}
+                                    onChange={handleChange}
+                                    className="w-full p-2 border rounded"
+                                />
+                            </div>
 
-                        <div>
-                            <label className="text-sm text-gray-500">Alert Mode</label>
-                            <div className="w-full border rounded px-3 py-2 bg-gray-50 text-gray-800 capitalize">
-                                {user.alertMode || "email"}
+                            <div>
+                                <label className="text-sm text-gray-500">Email</label>
+                                <input
+                                    name="email"
+                                    value={form.email}
+                                    onChange={handleChange}
+                                    className="w-full p-2 border rounded"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="text-sm text-gray-500">Alert Mode</label>
+                                <select
+                                    name="alertMode"
+                                    value={form.alertMode}
+                                    onChange={handleChange}
+                                    className="w-full p-2 border rounded"
+                                >
+                                    <option value="email">Email</option>
+                                    <option value="sms">SMS</option>
+                                </select>
+                            </div>
+
+                            <div className="mt-6 flex justify-end gap-3">
+                                <Button text="Cancel" onClick={() => setEditMode(false)} />
+                                <Button text="Save Changes" onClick={handleSave} />
                             </div>
                         </div>
+                    )}
+                </div>
 
-                        <div className="mt-6 flex justify-end">
-                            <Button text="Edit Profile" onClick={() => setEditMode(true)} />
-                        </div>
-                    </div>
-                ) : (
-                    <div className="space-y-4">
-                        <div>
-                            <label className="text-sm text-gray-500">Name</label>
-                            <input
-                                name="name"
-                                value={form.name}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="text-sm text-gray-500">Email</label>
-                            <input
-                                name="email"
-                                value={form.email}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="text-sm text-gray-500">Alert Mode</label>
-                            <select
-                                name="alertMode"
-                                value={form.alertMode}
-                                onChange={handleChange}
-                                className="w-full p-2 border rounded"
-                            >
-                                <option value="email">Email</option>
-                                <option value="sms">SMS</option>
-                            </select>
-                        </div>
-
-                        <div className="mt-6 flex justify-end gap-3">
-                            <Button text="Cancel" onClick={() => setEditMode(false)} />
-                            <Button text="Save Changes" onClick={handleSave} />
-                        </div>
-                    </div>
-                )}
+                {/* Logout */}
+                <div className="pt-6 mt-8 border-t flex justify-end">
+                    <button
+                        onClick={handleLogout}
+                        className="text-sm bg-red-600 text-white hover:bg-red-700 p-2 rounded-full font-medium flex items-center gap-1"
+                    >
+                        <ArrowRightOnRectangleIcon className="w-5 h-5" /> Logout
+                    </button>
+                </div>
             </div>
         </div>
     );

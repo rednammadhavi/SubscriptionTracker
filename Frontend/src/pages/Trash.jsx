@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import {
     getDeletedSubscriptions,
     restoreSubscription,
-    deleteSubscriptionPermanently
+    deleteSubscriptionPermanently,
 } from "../Api/subscription";
 import Button from "../components/Button";
 import Modal from "../components/Modal";
 import ToastService from "../utils/toast";
+import RestoreIcon from "@mui/icons-material/Restore";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 
 const Trash = () => {
     const [trash, setTrash] = useState([]);
@@ -47,31 +49,71 @@ const Trash = () => {
     }, []);
 
     return (
-        <div>
-            <h1 className="text-xl font-bold mb-4">Trash</h1>
+        <div className="p-4">
+            <h1 className="text-2xl font-bold text-gray-800 mb-6">🗑️ Trash</h1>
+
             {trash.length === 0 ? (
-                <p>No deleted subscriptions.</p>
+                <p className="text-gray-600 text-center mt-20">No deleted subscriptions found.</p>
             ) : (
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {trash.map((sub) => (
-                        <div key={sub._id} className="border rounded p-4 shadow-sm">
-                            <h2 className="text-lg font-semibold">{sub.name}</h2>
-                            <p className="text-gray-700 mb-1">₹{sub.cost} / {sub.cycle}</p>
-                            <p className="text-sm text-gray-500 mb-2">Deleted on: {new Date(sub.updatedAt).toLocaleDateString()}</p>
-                            <div className="flex gap-2">
-                                <Button text="Restore" className="bg-green-600" onClick={() => handleRestore(sub._id)} />
-                                <Button text="Delete" className="bg-red-500" onClick={() => setConfirm({ id: sub._id, name: sub.name })} />
+                        <div
+                            key={sub._id}
+                            className="bg-white border border-gray-200 rounded-lg p-5 shadow-md transition-transform hover:scale-[1.01]"
+                        >
+                            <h2 className="text-lg font-semibold text-gray-800">{sub.name}</h2>
+                            <p className="text-gray-700 mt-1">
+                                ₹{sub.cost} / {sub.cycle}
+                            </p>
+                            <p className="text-sm text-gray-500 mt-1">
+                                Deleted on: {new Date(sub.updatedAt).toLocaleDateString()}
+                            </p>
+                            <div className="flex gap-3 mt-4">
+                                <Button
+                                    text={
+                                        <span className="flex items-center gap-1">
+                                            <RestoreIcon fontSize="small" /> Restore
+                                        </span>
+                                    }
+                                    className="bg-green-600 hover:bg-green-700"
+                                    onClick={() => handleRestore(sub._id)}
+                                />
+                                <Button
+                                    text={
+                                        <span className="flex items-center gap-1">
+                                            <DeleteForeverIcon fontSize="small" /> Delete
+                                        </span>
+                                    }
+                                    className="bg-red-600 hover:bg-red-700"
+                                    onClick={() => setConfirm({ id: sub._id, name: sub.name })}
+                                />
                             </div>
                         </div>
                     ))}
                 </div>
             )}
 
-            <Modal isOpen={!!confirm} title="Confirm Permanent Delete" onClose={() => setConfirm(null)}>
-                <p>Are you sure you want to permanently delete "{confirm?.name}"?</p>
-                <div className="flex justify-end gap-2 mt-4">
+            <Modal
+                isOpen={!!confirm}
+                title="Confirm Permanent Deletion"
+                onClose={() => setConfirm(null)}
+            >
+                <p className="text-gray-700">
+                    Are you sure you want to permanently delete{" "}
+                    <span className="font-semibold">"{confirm?.name}"</span>?
+                </p>
+                <div className="flex justify-end gap-2 mt-6">
                     <Button text="Cancel" onClick={() => setConfirm(null)} />
-                    <Button text="Delete" className="bg-red-600" onClick={handlePermanentDelete} />
+                    <Button
+                        text={
+                            <span className="flex items-center gap-1">
+                                <DeleteForeverIcon fontSize="small" />
+                                Delete
+                            </span>
+                        }
+                        className="bg-red-600 hover:bg-red-700"
+                        onClick={handlePermanentDelete}
+                    />
                 </div>
             </Modal>
         </div>

@@ -5,11 +5,13 @@ import Input from '../components/Input';
 import Button from '../components/Button';
 import Alert from '../components/Alert';
 import LoadingSpinner from '../components/LoadingSpinner';
+import { Eye, EyeOff } from 'lucide-react';
 
 const Login = () => {
     const [form, setForm] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -39,11 +41,16 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-            <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
-                <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
-                    Log In to Your Account
-                </h2>
+        <div className="min-h-[83vh] bg-gradient-to-br from-indigo-100 to-indigo-300 flex items-center justify-center px-4">
+            <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
+                <div className="flex flex-col items-center mb-6">
+                    <div className="h-16 w-16 rounded-full bg-indigo-600 text-white flex items-center justify-center text-3xl font-bold">
+                        🔐
+                    </div>
+                    <h2 className="text-2xl font-bold text-gray-800 mt-3">
+                        Log In to Your Account
+                    </h2>
+                </div>
 
                 {successMessage && <Alert message={successMessage} type="success" />}
                 {error && <Alert message={error} type="error" />}
@@ -56,13 +63,30 @@ const Login = () => {
                         value={form.email}
                         onChange={handleChange}
                     />
-                    <Input
-                        label="Password"
-                        name="password"
-                        type="password"
-                        value={form.password}
-                        onChange={handleChange}
-                    />
+
+                    {/* Password with toggle */}
+                    <div>
+                        <label className="block mb-1 text-gray-700">Password</label>
+                        <div className="relative">
+                            <input
+                                name="password"
+                                type={showPassword ? 'text' : 'password'}
+                                value={form.password}
+                                onChange={handleChange}
+                                className="w-full border border-gray-300 rounded px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            />
+                            <div
+                                className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
+                                onClick={() => setShowPassword(!showPassword)}
+                            >
+                                {showPassword ? (
+                                    <EyeOff className="h-5 w-5 text-gray-500" />
+                                ) : (
+                                    <Eye className="h-5 w-5 text-gray-500" />
+                                )}
+                            </div>
+                        </div>
+                    </div>
 
                     <div className="pt-2">
                         {loading ? (
@@ -81,7 +105,7 @@ const Login = () => {
                     Don’t have an account?{' '}
                     <Link
                         to="/register"
-                        className="font-medium text-indigo-600 hover:text-indigo-500"
+                        className="font-medium text-indigo-600 hover:underline"
                     >
                         Register
                     </Link>

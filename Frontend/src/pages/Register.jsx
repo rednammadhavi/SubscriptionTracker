@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { register } from '../Api/auth';
-import Input from '../components/Input';
+import { Eye, EyeOff, UserRound } from 'lucide-react';
 import Button from '../components/Button';
 import Alert from '../components/Alert';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -10,6 +10,7 @@ const Register = () => {
     const [form, setForm] = useState({ name: '', email: '', password: '' });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -37,37 +38,66 @@ const Register = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-            <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
-                <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
-                    Create an Account
-                </h2>
+        <div className="min-h-[83vh] bg-gradient-to-br from-indigo-100 to-indigo-300 flex items-center justify-center px-4">
+            <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
+                <div className="flex flex-col items-center mb-6">
+                    <UserRound className="h-12 w-12 text-indigo-600 mb-2" />
+                    <h2 className="text-2xl font-bold text-gray-800">Create an Account</h2>
+                    <p className="text-sm text-gray-500 mt-1">Join us and get started</p>
+                </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <Input
-                        label="Name"
-                        name="name"
-                        type="text"
-                        value={form.name}
-                        onChange={handleChange}
-                    />
-                    <Input
-                        label="Email"
-                        name="email"
-                        type="email"
-                        value={form.email}
-                        onChange={handleChange}
-                    />
-                    <Input
-                        label="Password"
-                        name="password"
-                        type="password"
-                        value={form.password}
-                        onChange={handleChange}
-                    />
+                    {/* Name */}
+                    <div>
+                        <label className="block mb-1 text-gray-700">Name</label>
+                        <input
+                            name="name"
+                            type="text"
+                            value={form.name}
+                            onChange={handleChange}
+                            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
+                    </div>
+
+                    {/* Email */}
+                    <div>
+                        <label className="block mb-1 text-gray-700">Email</label>
+                        <input
+                            name="email"
+                            type="email"
+                            value={form.email}
+                            onChange={handleChange}
+                            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
+                    </div>
+
+                    {/* Password with toggle */}
+                    <div>
+                        <label className="block mb-1 text-gray-700">Password</label>
+                        <div className="relative">
+                            <input
+                                name="password"
+                                type={showPassword ? 'text' : 'password'}
+                                value={form.password}
+                                onChange={handleChange}
+                                className="w-full border border-gray-300 rounded px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            />
+                            <div
+                                className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
+                                onClick={() => setShowPassword(!showPassword)}
+                            >
+                                {showPassword ? (
+                                    <EyeOff className="h-5 w-5 text-gray-500" />
+                                ) : (
+                                    <Eye className="h-5 w-5 text-gray-500" />
+                                )}
+                            </div>
+                        </div>
+                    </div>
 
                     {error && <Alert message={error} type="error" />}
 
+                    {/* Submit */}
                     <div className="pt-2">
                         {loading ? (
                             <LoadingSpinner />
@@ -85,9 +115,9 @@ const Register = () => {
                     Already have an account?{' '}
                     <Link
                         to="/login"
-                        className="font-medium text-indigo-600 hover:text-indigo-500"
+                        className="font-medium text-indigo-600 hover:underline"
                     >
-                        Log In
+                        LogIn
                     </Link>
                 </p>
             </div>

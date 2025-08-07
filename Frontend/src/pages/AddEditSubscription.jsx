@@ -18,42 +18,47 @@ const AddEditSubscription = ({ isEdit = false }) => {
         category: "Other",
     });
 
-    const [loading, setLoading] = useState(isEdit); // show loader only on edit mode
+    const [loading, setLoading] = useState(isEdit);
+    const [submitting, setSubmitting] = useState(false);
     const { id } = useParams();
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchSubscription = async () => {
-            if (isEdit && id) {
+        if (isEdit && id) {
+            const fetchSubscription = async () => {
                 try {
                     const res = await getSubscriptionById(id);
                     const data = res.data;
 
-                    // Safely populate fields, format date properly
                     setForm({
                         name: data.name || "",
                         cost: data.cost || "",
                         cycle: data.cycle || "monthly",
-                        startDate: data.startDate?.slice(0, 10) || "",
+                        startDate: data.startDate?.split("T")[0] || "",
                         reminderMode: data.reminderMode || "email",
                         category: data.category || "Other",
                     });
                 } catch (err) {
                     ToastService.error("Failed to load subscription.");
+                    console.error("Error fetching subscription:", err);
                 } finally {
                     setLoading(false);
                 }
-            }
-        };
+            };
 
-        fetchSubscription();
+            fetchSubscription();
+        }
     }, [id, isEdit]);
 
-    const handleChange = (e) =>
-        setForm({ ...form, [e.target.name]: e.target.value });
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setForm((prev) => ({ ...prev, [name]: value }));
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setSubmitting(true);
+
         try {
             if (isEdit) {
                 await updateSubscription(id, form);
@@ -62,100 +67,139 @@ const AddEditSubscription = ({ isEdit = false }) => {
                 await createSubscription(form);
                 ToastService.success("Subscription added successfully!");
             }
-            navigate("/");
-        } catch {
+            navigate("/dashboard");
+        } catch (error) {
             ToastService.error("Something went wrong.");
+            console.error("Submission error:", error);
+        } finally {
+            setSubmitting(false);
         }
     };
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-[60vh] text-gray-500">
+            <div className="flex justify-center items-center h-[60vh] text-gray-600 text-lg">
                 Loading subscription details...
             </div>
         );
     }
 
     return (
-        <div className="max-w-md mx-auto p-4">
-            <h2 className="text-2xl font-bold mb-4 text-center">
+        <div className="max-w-xl mx-auto p-6 bg-white rounded shadow-md">
+            <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800">
                 {isEdit ? "Edit Subscription" : "Add Subscription"}
             </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+
+            <form onSubmit={handleSubmit} className="space-y-5">
                 {/* Name */}
-                <input
-                    type="text"
-                    name="name"
-                    placeholder="Subscription Name"
-                    value={form.name}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded"
-                    required
-                />
+                <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                        Subscription Name
+                    </label>
+                    <input
+                        id="name"
+                        name="name"
+                        type="text"
+                        value={form.name}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                    />
+                </div>
 
                 {/* Cost */}
-                <input
-                    type="number"
-                    name="cost"
-                    placeholder="Cost (₹)"
-                    value={form.cost}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded"
-                    required
-                />
+                <div>
+                    <label htmlFor="cost" className="block text-sm font-medium text-gray-700 mb-1">
+                        Cost (₹)
+                    </label>
+                    <input
+                        id="cost"
+                        name="cost"
+                        type="number"
+                        value={form.cost}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                    />
+                </div>
 
                 {/* Start Date */}
-                <input
-                    type="date"
-                    name="startDate"
-                    value={form.startDate}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded"
-                    required
-                />
+                <div>
+                    <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
+                        Start Date
+                    </label>
+                    <input
+                        id="startDate"
+                        name="startDate"
+                        type="date"
+                        value={form.startDate}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        required
+                    />
+                </div>
 
                 {/* Cycle */}
-                <select
-                    name="cycle"
-                    value={form.cycle}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded"
-                >
-                    <option value="monthly">Monthly</option>
-                    <option value="yearly">Yearly</option>
-                </select>
+                <div>
+                    <label htmlFor="cycle" className="block text-sm font-medium text-gray-700 mb-1">
+                        Billing Cycle
+                    </label>
+                    <select
+                        id="cycle"
+                        name="cycle"
+                        value={form.cycle}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        <option value="monthly">Monthly</option>
+                        <option value="yearly">Yearly</option>
+                    </select>
+                </div>
 
                 {/* Reminder Mode */}
-                <select
-                    name="reminderMode"
-                    value={form.reminderMode}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded"
-                >
-                    <option value="email">Email</option>
-                    <option value="sms">SMS</option>
-                </select>
+                <div>
+                    <label htmlFor="reminderMode" className="block text-sm font-medium text-gray-700 mb-1">
+                        Reminder Mode
+                    </label>
+                    <select
+                        id="reminderMode"
+                        name="reminderMode"
+                        value={form.reminderMode}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        <option value="email">Email</option>
+                        <option value="sms">SMS</option>
+                    </select>
+                </div>
 
                 {/* Category */}
-                <select
-                    name="category"
-                    value={form.category}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded"
-                >
-                    <option value="Entertainment">Entertainment</option>
-                    <option value="Productivity">Productivity</option>
-                    <option value="Streaming">Streaming</option>
-                    <option value="Utilities">Utilities</option>
-                    <option value="News">News</option>
-                    <option value="Other">Other</option>
-                </select>
+                <div>
+                    <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+                        Category
+                    </label>
+                    <select
+                        id="category"
+                        name="category"
+                        value={form.category}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Productivity">Productivity</option>
+                        <option value="Streaming">Streaming</option>
+                        <option value="Utilities">Utilities</option>
+                        <option value="News">News</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
 
-                {/* Submit */}
+                {/* Submit Button */}
                 <Button
                     type="submit"
-                    text={isEdit ? "Update Subscription" : "Add Subscription"}
+                    text={submitting ? "Please wait..." : isEdit ? "Update Subscription" : "Add Subscription"}
                     className="w-full"
+                    disabled={submitting}
                 />
             </form>
         </div>

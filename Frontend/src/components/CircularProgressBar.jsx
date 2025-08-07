@@ -1,27 +1,50 @@
 import React from "react";
 
-const CircularProgressBar = ({ percentage, color }) => {
+const CircularProgressBar = ({
+    percentage = 0,
+    color = "#3b82f6", // Tailwind blue-500
+    size = 64,         // Default: 64px
+    strokeWidth = 8,
+    showText = true,
+}) => {
+    const radius = (size - strokeWidth) / 2;
+    const circumference = 2 * Math.PI * radius;
+    const offset = circumference - (percentage / 100) * circumference;
+
     return (
-        <div className="relative w-16 h-16">
-            <svg className="w-full h-full">
-                <circle cx="50%" cy="50%" r="25%" fill="transparent" stroke="#e5e7eb" strokeWidth="8" />
+        <div className="relative" style={{ width: size, height: size }}>
+            <svg width={size} height={size} className="transform -rotate-90">
                 <circle
-                    cx="50%"
-                    cy="50%"
-                    r="25%"
+                    cx={size / 2}
+                    cy={size / 2}
+                    r={radius}
+                    stroke="#e5e7eb"
+                    strokeWidth={strokeWidth}
                     fill="transparent"
+                />
+                <circle
+                    cx={size / 2}
+                    cy={size / 2}
+                    r={radius}
                     stroke={color}
-                    strokeWidth="8"
-                    strokeDasharray="157"
-                    strokeDashoffset={157 - (157 * percentage) / 100}
+                    strokeWidth={strokeWidth}
+                    fill="transparent"
+                    strokeDasharray={circumference}
+                    strokeDashoffset={offset}
                     strokeLinecap="round"
-                    transform="rotate(-90 32 32)"
+                    style={{ transition: "stroke-dashoffset 0.5s ease" }}
                 />
             </svg>
-            <div className="absolute inset-0 flex items-center justify-center text-sm font-semibold text-white">
-                {percentage}%
-            </div>
+            {showText && (
+                <div
+                    className="absolute inset-0 flex items-center justify-center text-sm font-semibold"
+                    style={{ color }}
+                >
+                    {percentage}%
+                </div>
+            )}
         </div>
     );
 };
+
 export default CircularProgressBar;
