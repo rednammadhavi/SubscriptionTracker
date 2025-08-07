@@ -24,8 +24,8 @@ const AddEditSubscription = ({ isEdit = false }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (isEdit && id) {
-            const fetchSubscription = async () => {
+        const fetchSubscription = async () => {
+            if (isEdit && id) {
                 try {
                     const res = await getSubscriptionById(id);
                     const data = res.data;
@@ -34,25 +34,25 @@ const AddEditSubscription = ({ isEdit = false }) => {
                         name: data.name || "",
                         cost: data.cost || "",
                         cycle: data.cycle || "monthly",
-                        startDate: data.startDate?.split("T")[0] || "",
+                        startDate: data.startDate ? data.startDate.slice(0, 10) : "",
                         reminderMode: data.reminderMode || "email",
                         category: data.category || "Other",
                     });
-                } catch (err) {
+
+                    setLoading(false);
+                } catch (error) {
+                    console.error("Error fetching subscription:", error);
                     ToastService.error("Failed to load subscription.");
-                    console.error("Error fetching subscription:", err);
-                } finally {
                     setLoading(false);
                 }
-            };
+            }
+        };
 
-            fetchSubscription();
-        }
+        fetchSubscription();
     }, [id, isEdit]);
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        setForm((prev) => ({ ...prev, [name]: value }));
+        setForm({ ...form, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = async (e) => {
@@ -69,8 +69,8 @@ const AddEditSubscription = ({ isEdit = false }) => {
             }
             navigate("/dashboard");
         } catch (error) {
+            console.error("Error submitting subscription:", error);
             ToastService.error("Something went wrong.");
-            console.error("Submission error:", error);
         } finally {
             setSubmitting(false);
         }
@@ -91,7 +91,6 @@ const AddEditSubscription = ({ isEdit = false }) => {
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-5">
-                {/* Name */}
                 <div>
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                         Subscription Name
@@ -107,7 +106,6 @@ const AddEditSubscription = ({ isEdit = false }) => {
                     />
                 </div>
 
-                {/* Cost */}
                 <div>
                     <label htmlFor="cost" className="block text-sm font-medium text-gray-700 mb-1">
                         Cost (₹)
@@ -123,7 +121,6 @@ const AddEditSubscription = ({ isEdit = false }) => {
                     />
                 </div>
 
-                {/* Start Date */}
                 <div>
                     <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
                         Start Date
@@ -139,7 +136,6 @@ const AddEditSubscription = ({ isEdit = false }) => {
                     />
                 </div>
 
-                {/* Cycle */}
                 <div>
                     <label htmlFor="cycle" className="block text-sm font-medium text-gray-700 mb-1">
                         Billing Cycle
@@ -156,7 +152,6 @@ const AddEditSubscription = ({ isEdit = false }) => {
                     </select>
                 </div>
 
-                {/* Reminder Mode */}
                 <div>
                     <label htmlFor="reminderMode" className="block text-sm font-medium text-gray-700 mb-1">
                         Reminder Mode
@@ -173,7 +168,6 @@ const AddEditSubscription = ({ isEdit = false }) => {
                     </select>
                 </div>
 
-                {/* Category */}
                 <div>
                     <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
                         Category
@@ -194,7 +188,6 @@ const AddEditSubscription = ({ isEdit = false }) => {
                     </select>
                 </div>
 
-                {/* Submit Button */}
                 <Button
                     type="submit"
                     text={submitting ? "Please wait..." : isEdit ? "Update Subscription" : "Add Subscription"}

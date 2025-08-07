@@ -6,6 +6,7 @@ const router = express.Router();
 import {
     addSubscription,
     getSubscriptions,
+    getSubscriptionById,
     updateSubscription,
     deleteSubscription,
     getDeletedSubscriptions,
@@ -15,6 +16,7 @@ import {
 
 router.route('/').post(verifyJwt, addSubscription)
 router.route('/').get(verifyJwt, getSubscriptions)
+router.route('/:id').get(verifyJwt, getSubscriptionById)
 router.route('/:id').put(verifyJwt, updateSubscription)
 router.route('/:id').delete(verifyJwt, deleteSubscription)
 

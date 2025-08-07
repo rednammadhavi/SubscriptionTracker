@@ -65,6 +65,22 @@ const getDeletedSubscriptions = async (req, res) => {
     }
 };
 
+const getSubscriptionById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const subscription = await Subscription.findById(id);
+
+        if (!subscription) {
+            return res.status(404).json({ error: 'Subscription not found' });
+        }
+
+        res.json(subscription);
+    } catch (error) {
+        console.error('Error fetching subscription by ID:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+};
+
 const restoreSubscription = async (req, res) => {
     try {
         const restored = await Subscription.findOneAndUpdate(
@@ -100,6 +116,7 @@ const deleteSubscriptionPermanently = async (req, res) => {
 export {
     addSubscription,
     getSubscriptions,
+    getSubscriptionById,
     updateSubscription,
     deleteSubscription,
     getDeletedSubscriptions,
